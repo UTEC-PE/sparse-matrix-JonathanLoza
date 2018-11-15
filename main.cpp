@@ -24,13 +24,23 @@ int main(int argc, char *argv[]) {
     cout<<endl;
     b.print();
     cout<<endl;
-    Matrix<int> c=a*b;
+    /*Matrix<int> c=a*b;
     cout<<endl;
     c.print();
     cout<<endl;
     c=c.transposed();
     cout<<endl;
+    c.print();*/
+    a=a+a;
+    a.print();
+    cout<<endl;
+    Matrix<int> c=a+a;
     c.print();
+    //a.print();
+    /*cout<<endl;
+    Matrix<int> c=b+a;
+    c.print();*/
+    //b.print();
 
 
     return EXIT_SUCCESS;

@@ -8,11 +8,12 @@ using namespace std;
 template <typename T>
 class Matrix {
     private:
+        int nombre;
         Node<T>* hRows;
         Node<T>* hColumns;
         int columns;
         int rows;
-
+        Matrix<T> *nueva;
     public:
         Matrix();
         Matrix(int sizeX, int sizeY){
@@ -42,7 +43,6 @@ class Matrix {
           }
           Node<T> *nodo;
           if(data!=0){
-            //cout<<"Nuevo nodo"<<x<<","<<y<<endl;
             nodo=new Node<T>(x,y,data);
           }
 
@@ -54,20 +54,14 @@ class Matrix {
           for(int i=0; i<y;i++){
             tempColumns=tempColumns->next;
           }
-          //cout<<"aqui"<<endl;
           for(int i=0; i<=y;i++){
-            //cout<<"for "<<i<<endl;
             if(tempRows->next==nullptr){
-              //cout<<"vacio"<<endl;
               if(data!=0){
-                //cout<<"no cero"<<endl;
-                //cout<<nodo->x<<","<<nodo->y<<endl;
                 tempRows->next=nodo;
               }
               break;
             }
             else if(tempRows->next->y==y){
-              //cout<<"igual"<<endl;
               if(data!=0){
                 tempRows->next->data=data;
                 delete nodo;
@@ -76,12 +70,10 @@ class Matrix {
                 auto temp=tempRows->next->next;
                 nodo=tempRows->next;
                 tempRows->next=temp;
-                //delete nodo;
               }
               break;
             }
             else if(tempRows->next->y>y){
-              //cout<<"mayor"<<endl;
               if(data!=0){
                 auto temp=tempRows->next;
                 tempRows->next=nodo;
@@ -90,28 +82,19 @@ class Matrix {
               break;
             }
             else{
-              //cout<<"menor"<<endl;
               tempRows=tempRows->next;
             }
           }
-          //cout<<endl;
-          //cout<<"aqui 2"<<endl;
           for(int j=0; j<=x;j++){
-            //cout<<"for "<<j<<endl;
             if(!tempColumns->down){
-              //cout<<"vacio"<<endl;
               if(data!=0){
-                //cout<<"no cero"<<endl;
-                //cout<<nodo->x<<","<<nodo->y<<endl;
                 tempColumns->down=nodo;
               }
               break;
             }
             else if(tempColumns->down->x==x){
-              //cout<<"igual"<<endl;
               if(data!=0){
                 tempColumns->down->data=data;
-                //delete nodo;
               }
               else{
                 auto temp=tempColumns->down->down;
@@ -122,7 +105,6 @@ class Matrix {
               break;
             }
             else if(tempColumns->down->x>x){
-              //cout<<"mayor"<<endl;
               if(data!=0){
                 auto temp=tempColumns->down;
                 tempColumns->down=nodo;
@@ -131,12 +113,9 @@ class Matrix {
               break;
             }
             else{
-              //out<<"menor"<<endl;
               tempColumns=tempColumns->down;
             }
           }
-          //cout<<endl;
-
         };
         void print(){
           auto tempRows=hRows;
@@ -214,88 +193,83 @@ class Matrix {
             return false;
           }
         };
-        Matrix<T> operator*(Matrix<T> other){
+        Matrix<T> &operator*(Matrix<T> &other){
           if(!compatible(other)){
             cout<<"Matrices incompatibles para multiplicacion"<<endl;
             throw "Matrices incompatibles";
           }
           T respuesta;
-          Matrix<T> nueva(rows,other.columns);
+          nueva=new Matrix<T>(rows,other.columns);
           for(int i=0;i<rows;i++){
             for(int j=0;j<other.columns;j++){
               respuesta=0;
               for(int k=0;k<columns;k++){
                 respuesta+=(*this)(i,k)*other(k,j);
               }
-              nueva.set(i,j,respuesta);
+              nueva->set(i,j,respuesta);
             }
           }
-          //nueva.print();
-          return nueva;
+          return *nueva;
         };
-        Matrix<T> operator*(T scalar){
+        Matrix<T> &operator*(T scalar){
           T respuesta;
-          Matrix<T> nueva(rows,columns);
+          nueva=new Matrix<T>(rows,columns);
           for(int i=0; i<rows;i++){
             for(int j=0;j<columns;j++){
-              //cout<<i<<","<<j<<endl;
               respuesta=(*this)(i,j)*scalar;
-              nueva.set(i,j,respuesta);
+              nueva->set(i,j,respuesta);
             }
           }
-          //nueva.print();
-          return nueva;
+          return *nueva;
         };
-        Matrix<T> operator+(Matrix<T> other){
+        Matrix<T> &operator+(Matrix<T> &other){
           T respuesta;
           if(!dimensionesiguales(other)){
             cout<<"Matrices incompatibles"<<endl;
             throw "Matrices incompatibles";
           }
-          Matrix<T> nueva(rows,columns);
+          nueva=new Matrix<T>(rows,columns);
           for(int i=0; i<rows;i++){
             for(int j=0;j<columns;j++){
-              //cout<<i<<","<<j<<endl;
               respuesta=(*this)(i,j)+other(i,j);
-              nueva.set(i,j,respuesta);
+              nueva->set(i,j,respuesta);
             }
           }
-          //nueva.print();
-          return nueva;
+          return *nueva;
         };
-        Matrix<T> operator-(Matrix<T>  other){
+        Matrix<T> &operator-(Matrix<T>  &other){
           T respuesta;
           if(!dimensionesiguales(other)){
             cout<<"Matrices incompatibles"<<endl;
             throw "Matrices incompatibles";
           }
-          Matrix<T> nueva(rows,columns);
+          nueva=new Matrix<T>(rows,columns);
           for(int i=0; i<rows;i++){
             for(int j=0;j<columns;j++){
-              //cout<<i<<","<<j<<endl;
               respuesta=(*this)(i,j)-other(i,j);
-              nueva.set(i,j,respuesta);
+              nueva->set(i,j,respuesta);
             }
           }
-          //nueva.print();
-          return nueva;
+          return *nueva;
         };
 
-        Matrix<T> transposed(){
-          Matrix<T> temp(columns,rows);
+        Matrix<T> &transposed(){
+           nueva= new Matrix<T>(columns,rows);
           for(int i=0;i<rows;i++){
             for(int j=0;j<columns;j++){
-              //cout<<i<<","<<j<<": "<<(*this)(i,j)<<endl;
-              temp.set(j,i,(*this)(i,j));
+              nueva->set(j,i,(*this)(i,j));
             }
           }
 
-          return temp;
+          return *nueva;
         };
-        Matrix<T> &operator=(Matrix<T> other){
+        Matrix<T> &operator=(Matrix<T> &other){
           T respuesta;
-          clear();
-          redimensionar(other.rows,other.columns);
+          if(rows!=other.rows || columns!=other.columns){
+            clear();
+            redimensionar(other.rows,other.columns);
+          }
+
           this->rows=other.rows;
           this->columns=other.columns;
           for(int i=0;i<rows;i++){
@@ -305,13 +279,13 @@ class Matrix {
           }
           return *this;
         };
-        bool dimensionesiguales(Matrix<T> other){
+        bool dimensionesiguales(Matrix<T> &other){
           if(this->rows==other.rows && this->columns==other.columns)
             return true;
           else
             return false;
         };
-        bool compatible(Matrix<T> other){
+        bool compatible(Matrix<T> &other){
           if(this->columns==other.rows)
             return true;
           else
@@ -349,13 +323,14 @@ class Matrix {
           }
         }
         ~Matrix(){
-          //clear();
-          /*if(hRows){
+          //cout<<"llamando destrcutor"<<endl;
+          clear();
+          if(hRows){
             hRows->killSelfdown();
           }
           if(hColumns){
             hColumns->killSelfnext();
-          }*/
+          }
         };
 };
 
